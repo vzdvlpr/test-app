@@ -1,5 +1,5 @@
 import type React from 'react';
-import {useCallback, useMemo, useState} from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import DataGrid, { type Column } from 'react-data-grid';
 import rowsData from './mock.json';
 import 'react-data-grid/lib/styles.css';
@@ -46,19 +46,18 @@ const Grid: React.FC = () => {
 
   const toggleColumnByKey = useCallback((columnKey: string) => {
     setVisibleColumns((prev) => {
-      const idx = prev.findIndex(({key}) => key === columnKey)
+      const idx = prev.findIndex(({ key }) => key === columnKey);
       if (idx !== -1) {
         return prev.filter((c) => c.key !== columnKey);
       } else {
-        const col = columns.find(({key}) => key === columnKey )
+        const col = columns.find(({ key }) => key === columnKey);
         if (col) {
           return [...prev, col];
         }
         return prev;
       }
-    } );
+    });
   }, []);
-
 
   const onCellContextMenu = useCallback(
     (args: { row: Row }, event: React.MouseEvent) => {
@@ -122,14 +121,20 @@ const Grid: React.FC = () => {
         {() => (
           <div>
             <p>Показать/скрыть колонки</p>
-            {columns.map(({key, name}) => {
+            {columns.map(({ key, name }) => {
               return (
                 <div>
                   {name}
-                  <input type="checkbox"
-                         checked={!!visibleColumns.find(({key: visColKey}) =>  visColKey === key)}
-                         name={name as string}
-                         onChange={() => toggleColumnByKey(key)}/>
+                  <input
+                    type="checkbox"
+                    checked={
+                      !!visibleColumns.find(
+                        ({ key: visColKey }) => visColKey === key,
+                      )
+                    }
+                    name={name as string}
+                    onChange={() => toggleColumnByKey(key)}
+                  />
                 </div>
               );
             })}

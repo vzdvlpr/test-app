@@ -7,7 +7,7 @@ export interface ContextMenuProps<DataT> {
   y: number;
   data?: DataT | null;
   onClose: () => void;
-  children?: (ctx: { data?: DataT | null ; close: () => void }) => JSX.Element;
+  children?: (ctx: { data?: DataT | null; close: () => void }) => JSX.Element;
 }
 
 function ContextMenu<DataT>({
