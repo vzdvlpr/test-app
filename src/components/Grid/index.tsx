@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import DataGrid, { type Column } from 'react-data-grid';
 import rowsData from './mock.json';
 import 'react-data-grid/lib/styles.css';
@@ -44,11 +44,30 @@ const Grid: React.FC = () => {
     setMenuOpen(true);
   }, []);
 
+  const columnsWithHeaderMenu = useMemo(() => {
+    return columns.map((c) => ({
+      ...c,
+      renderHeaderCell: (p: any) => (
+        <div
+          onContextMenu={(e) => {
+            e.preventDefault();
+            setMenuRow(null);
+            setMenuPos({ x: e.clientX, y: e.clientY });
+            setMenuOpen(true);
+          }}
+          style={{ cursor: 'context-menu' }}
+        >
+          {String(p.column.name ?? p.column.key)}
+        </div>
+      )
+    }));
+  }, []);
+
   return (
     <>
       <DataGrid 
         className="rdg-light"
-        columns={columns} 
+        columns={columnsWithHeaderMenu} 
         rows={rows}
         rowKeyGetter={(row: Row) => row.id}
         onCellContextMenu={onCellContextMenu}
