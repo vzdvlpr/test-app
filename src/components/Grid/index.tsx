@@ -42,6 +42,7 @@ const Grid: React.FC = () => {
   });
   const [menuRow, setMenuRow] = useState<Row | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<Column<Row>[]>(columns);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   const toggleColumnByKey = useCallback((columnKey: string) => {
     setVisibleColumns((prev) => {
@@ -97,8 +98,9 @@ const Grid: React.FC = () => {
 
   return (
     <>
+
       <DataGrid
-        className="rdg-light"
+        className={theme === 'light' ? 'rdg-light' : 'rdg-dark'}
         columns={columnsWithHeaderMenu}
         rows={rows}
         rowKeyGetter={(row: Row) => row.id}
@@ -146,6 +148,18 @@ const Grid: React.FC = () => {
                 </div>
               );
             })}
+            <div style={{marginTop: 8,display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label htmlFor="theme-select">Тема:</label>
+              <select
+                id="theme-select"
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
+                style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              >
+                <option value="light">Светлая</option>
+                <option value="dark">Темная</option>
+              </select>
+            </div>
           </div>
         )}
       </ContextMenu>
