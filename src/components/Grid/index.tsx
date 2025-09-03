@@ -41,20 +41,27 @@ const Grid: React.FC = () => {
     y: 0,
   });
   const [menuRow, setMenuRow] = useState<Row | null>(null);
-
   const [visibleColumns, setVisibleColumns] = useState<Column<Row>[]>(columns);
 
   const toggleColumnByKey = useCallback((columnKey: string) => {
     setVisibleColumns((prev) => {
-      const idx = prev.findIndex(({ key }) => key === columnKey);
-      if (idx !== -1) {
+      const exists = prev.some(({ key }) => key === columnKey);
+      if (exists) {
         return prev.filter((c) => c.key !== columnKey);
       } else {
         const col = columns.find(({ key }) => key === columnKey);
-        if (col) {
-          return [...prev, col];
+        if (!col) {
+          return prev;
         }
-        return prev;
+        const newColumns: Column<Row>[] = [];
+        for (const c of columns) {
+          if (c.key === columnKey) {
+            newColumns.push(col);
+          } else if (prev.some((pc) => pc.key === c.key)) {
+            newColumns.push(c);
+          }
+        }
+        return newColumns;
       }
     });
   }, []);
@@ -112,18 +119,19 @@ const Grid: React.FC = () => {
           <DisableSensorButton<Row> data={data} close={close} />
         )}
       </ContextMenu>
+
       <ContextMenu<unknown>
         open={headerCellMenuOpen}
         x={menuPos.x}
         y={menuPos.y}
-        onClose={() => setCellMenuOpen}
+        onClose={() => setHeaderCellMenuOpen(false)}
       >
         {() => (
           <div>
-            <p>Показать/скрыть колонки</p>
+            Показать/скрыть колонки
             {columns.map(({ key, name }) => {
               return (
-                <div>
+                <div key={key}>
                   {name}
                   <input
                     type="checkbox"

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { type ReactElement, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface ContextMenuProps<DataT> {
@@ -7,7 +7,7 @@ export interface ContextMenuProps<DataT> {
   y: number;
   data?: DataT | null;
   onClose: () => void;
-  children?: (ctx: { data?: DataT | null; close: () => void }) => JSX.Element;
+  children?: (ctx: { data?: DataT | null; close: () => void }) => ReactElement;
 }
 
 function ContextMenu<DataT>({
@@ -18,19 +18,47 @@ function ContextMenu<DataT>({
   onClose,
   children,
 }: ContextMenuProps<DataT>) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target;
+    if (
+      target instanceof Node &&
+      wrapperRef.current &&
+      event.target &&
+      !wrapperRef.current.contains(target)
+    ) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside, false);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside, false);
+    };
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+      }
     }
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+    };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
 
   const menu = (
     <div
+      ref={wrapperRef}
       style={{
         position: 'fixed',
         left: x,
