@@ -19,7 +19,6 @@ interface Row {
 }
 
 const columns: Column<Row>[] = [
-  { key: 'id', name: 'ID' },
   { key: 'sensor', name: 'Датчик' },
   { key: 'kilometer', name: 'Километр' },
   { key: 'pressure', name: 'Давление' },
@@ -51,7 +50,12 @@ const Grid: React.FC = () => {
         className="rdg-light"
         columns={columns} 
         rows={rows}
+        rowKeyGetter={(row: Row) => row.id}
         onCellContextMenu={onCellContextMenu}
+        defaultColumnOptions={{
+          resizable: true,
+          sortable: true,
+        }}
       />
       <ContextMenu<Row>
         open={menuOpen}
