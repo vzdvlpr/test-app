@@ -1,5 +1,5 @@
 export interface DisableSensorButtonProps<DataT> {
-  data: DataT | null;
+  data?: DataT | null;
   close: () => void;
 }
 
@@ -23,7 +23,7 @@ function DisableSensorButton<DataT>({
         close();
       }}
     >
-      Disable sensor
+      Отключить сенсор
     </button>
   );
 }

@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import DataGrid, { type Column } from 'react-data-grid';
 import rowsData from './mock.json';
 import 'react-data-grid/lib/styles.css';
@@ -34,25 +34,44 @@ const columns: Column<Row>[] = [
 const rows: Row[] = rowsData as Row[];
 
 const Grid: React.FC = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [cellMenuOpen, setCellMenuOpen] = useState(false);
+  const [headerCellMenuOpen, setHeaderCellMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
   });
   const [menuRow, setMenuRow] = useState<Row | null>(null);
 
+  const [visibleColumns, setVisibleColumns] = useState<Column<Row>[]>(columns);
+
+  const toggleColumnByKey = useCallback((columnKey: string) => {
+    setVisibleColumns((prev) => {
+      const idx = prev.findIndex(({key}) => key === columnKey)
+      if (idx !== -1) {
+        return prev.filter((c) => c.key !== columnKey);
+      } else {
+        const col = columns.find(({key}) => key === columnKey )
+        if (col) {
+          return [...prev, col];
+        }
+        return prev;
+      }
+    } );
+  }, []);
+
+
   const onCellContextMenu = useCallback(
     (args: { row: Row }, event: React.MouseEvent) => {
       event.preventDefault();
       setMenuRow(args.row);
       setMenuPos({ x: event.clientX, y: event.clientY });
-      setMenuOpen(true);
+      setCellMenuOpen(true);
     },
     [],
   );
 
   const columnsWithHeaderMenu = useMemo(() => {
-    return columns.map((c) => ({
+    return visibleColumns.map((c) => ({
       ...c,
       renderHeaderCell: (p: any) => (
         <div
@@ -60,7 +79,7 @@ const Grid: React.FC = () => {
             e.preventDefault();
             setMenuRow(null);
             setMenuPos({ x: e.clientX, y: e.clientY });
-            setMenuOpen(true);
+            setHeaderCellMenuOpen(true);
           }}
           style={{ cursor: 'context-menu' }}
         >
@@ -68,7 +87,7 @@ const Grid: React.FC = () => {
         </div>
       ),
     }));
-  }, []);
+  }, [visibleColumns]);
 
   return (
     <>
@@ -84,14 +103,37 @@ const Grid: React.FC = () => {
         }}
       />
       <ContextMenu<Row>
-        open={menuOpen}
+        open={cellMenuOpen}
         x={menuPos.x}
         y={menuPos.y}
         data={menuRow}
-        onClose={() => setMenuOpen(false)}
+        onClose={() => setCellMenuOpen(false)}
       >
         {({ data, close }) => (
           <DisableSensorButton<Row> data={data} close={close} />
+        )}
+      </ContextMenu>
+      <ContextMenu<unknown>
+        open={headerCellMenuOpen}
+        x={menuPos.x}
+        y={menuPos.y}
+        onClose={() => setCellMenuOpen}
+      >
+        {() => (
+          <div>
+            <p>Показать/скрыть колонки</p>
+            {columns.map(({key, name}) => {
+              return (
+                <div>
+                  {name}
+                  <input type="checkbox"
+                         checked={!!visibleColumns.find(({key: visColKey}) =>  visColKey === key)}
+                         name={name as string}
+                         onChange={() => toggleColumnByKey(key)}/>
+                </div>
+              );
+            })}
+          </div>
         )}
       </ContextMenu>
     </>
