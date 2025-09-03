@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import type React from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import DataGrid, { type Column } from 'react-data-grid';
 import rowsData from './mock.json';
 import 'react-data-grid/lib/styles.css';
@@ -34,15 +35,21 @@ const rows: Row[] = rowsData as Row[];
 
 const Grid: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuPos, setMenuPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [menuPos, setMenuPos] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
   const [menuRow, setMenuRow] = useState<Row | null>(null);
 
-  const onCellContextMenu = useCallback((args: { row: Row }, event: React.MouseEvent) => {
-    event.preventDefault();
-    setMenuRow(args.row);
-    setMenuPos({ x: event.clientX, y: event.clientY });
-    setMenuOpen(true);
-  }, []);
+  const onCellContextMenu = useCallback(
+    (args: { row: Row }, event: React.MouseEvent) => {
+      event.preventDefault();
+      setMenuRow(args.row);
+      setMenuPos({ x: event.clientX, y: event.clientY });
+      setMenuOpen(true);
+    },
+    [],
+  );
 
   const columnsWithHeaderMenu = useMemo(() => {
     return columns.map((c) => ({
@@ -59,15 +66,15 @@ const Grid: React.FC = () => {
         >
           {String(p.column.name ?? p.column.key)}
         </div>
-      )
+      ),
     }));
   }, []);
 
   return (
     <>
-      <DataGrid 
+      <DataGrid
         className="rdg-light"
-        columns={columnsWithHeaderMenu} 
+        columns={columnsWithHeaderMenu}
         rows={rows}
         rowKeyGetter={(row: Row) => row.id}
         onCellContextMenu={onCellContextMenu}
@@ -83,7 +90,9 @@ const Grid: React.FC = () => {
         row={menuRow}
         onClose={() => setMenuOpen(false)}
       >
-        {({ row, close }) => <DisableSensorButton<Row> row={row} close={close} />}
+        {({ row, close }) => (
+          <DisableSensorButton<Row> row={row} close={close} />
+        )}
       </ContextMenu>
     </>
   );

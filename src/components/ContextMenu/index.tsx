@@ -10,7 +10,14 @@ export interface ContextMenuProps<RowT> {
   children?: (ctx: { row: RowT | null; close: () => void }) => JSX.Element;
 }
 
-function ContextMenu<RowT>({ open, x, y, row, onClose, children }: ContextMenuProps<RowT>) {
+function ContextMenu<RowT>({
+  open,
+  x,
+  y,
+  row,
+  onClose,
+  children,
+}: ContextMenuProps<RowT>) {
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
@@ -34,7 +41,7 @@ function ContextMenu<RowT>({ open, x, y, row, onClose, children }: ContextMenuPr
         borderRadius: 6,
         boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
         padding: 8,
-        minWidth: 160
+        minWidth: 160,
       }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -49,12 +56,12 @@ function ContextMenu<RowT>({ open, x, y, row, onClose, children }: ContextMenuPr
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        background: 'transparent'
+        background: 'transparent',
       }}
     >
       {menu}
     </div>,
-    document.body
+    document.body,
   );
 }
 

@@ -1,11 +1,12 @@
-import React from 'react';
-
 export interface DisableSensorButtonProps<RowT> {
   row: RowT | null;
   close: () => void;
 }
 
-function DisableSensorButton<RowT>({ row, close }: DisableSensorButtonProps<RowT>) {
+function DisableSensorButton<RowT>({
+  row,
+  close,
+}: DisableSensorButtonProps<RowT>) {
   return (
     <button
       style={{
@@ -14,7 +15,7 @@ function DisableSensorButton<RowT>({ row, close }: DisableSensorButtonProps<RowT
         padding: '8px 10px',
         background: 'transparent',
         border: 'none',
-        cursor: 'pointer'
+        cursor: 'pointer',
       }}
       onClick={() => {
         // eslint-disable-next-line no-console
