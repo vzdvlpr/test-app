@@ -1,23 +1,23 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-export interface ContextMenuProps<RowT> {
+export interface ContextMenuProps<DataT> {
   open: boolean;
   x: number;
   y: number;
-  row: RowT | null;
+  data: DataT | null;
   onClose: () => void;
-  children?: (ctx: { row: RowT | null; close: () => void }) => JSX.Element;
+  children?: (ctx: { data: DataT | null; close: () => void }) => JSX.Element;
 }
 
-function ContextMenu<RowT>({
+function ContextMenu<DataT>({
   open,
   x,
   y,
-  row,
+  data,
   onClose,
   children,
-}: ContextMenuProps<RowT>) {
+}: ContextMenuProps<DataT>) {
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
@@ -45,7 +45,7 @@ function ContextMenu<RowT>({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {children ? children({ row, close: onClose }) : null}
+      {children ? children({ data, close: onClose }) : null}
     </div>
   );
 

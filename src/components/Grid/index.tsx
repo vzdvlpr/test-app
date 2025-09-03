@@ -87,11 +87,11 @@ const Grid: React.FC = () => {
         open={menuOpen}
         x={menuPos.x}
         y={menuPos.y}
-        row={menuRow}
+        data={menuRow}
         onClose={() => setMenuOpen(false)}
       >
-        {({ row, close }) => (
-          <DisableSensorButton<Row> row={row} close={close} />
+        {({ data, close }) => (
+          <DisableSensorButton<Row> data={data} close={close} />
         )}
       </ContextMenu>
     </>

@@ -1,12 +1,12 @@
-export interface DisableSensorButtonProps<RowT> {
-  row: RowT | null;
+export interface DisableSensorButtonProps<DataT> {
+  data: DataT | null;
   close: () => void;
 }
 
-function DisableSensorButton<RowT>({
-  row,
+function DisableSensorButton<DataT>({
+  data,
   close,
-}: DisableSensorButtonProps<RowT>) {
+}: DisableSensorButtonProps<DataT>) {
   return (
     <button
       style={{
@@ -19,7 +19,7 @@ function DisableSensorButton<RowT>({
       }}
       onClick={() => {
         // eslint-disable-next-line no-console
-        console.log('Disable sensor for row:', row);
+        console.log('Disable sensor for data:', data);
         close();
       }}
     >
