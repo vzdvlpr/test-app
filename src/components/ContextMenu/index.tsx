@@ -1,4 +1,10 @@
-import { type ReactElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 export enum Position {
   LEFT = 'left',
@@ -22,14 +28,14 @@ export interface ContextMenuProps<DataT> {
 }
 
 function ContextMenu<DataT>({
-                              isOpen,
-                              x,
-                              y,
-                              data,
-                              onClose,
-                              position = Position.TOP_CENTER,
-                              children,
-                            }: ContextMenuProps<DataT>) {
+  isOpen,
+  x,
+  y,
+  data,
+  onClose,
+  position = Position.TOP_CENTER,
+  children,
+}: ContextMenuProps<DataT>) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [menuSize, setMenuSize] = useState({ width: 160, height: 100 }); // defaults
 
