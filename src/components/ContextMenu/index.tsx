@@ -33,7 +33,7 @@ function ContextMenu<DataT>({
   y,
   data,
   onClose,
-  position = Position.TOP_CENTER,
+  position = Position.BOTTOM_LEFT,
   children,
 }: ContextMenuProps<DataT>) {
   const wrapperRef = useRef<HTMLDivElement>(null);
