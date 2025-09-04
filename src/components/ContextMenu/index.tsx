@@ -1,46 +1,66 @@
-import { type ReactElement, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { type ReactElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
+
+export enum Position {
+  LEFT = 'left',
+  RIGHT = 'right',
+  TOP_CENTER = 'top-center',
+  TOP_LEFT = 'top-left',
+  TOP_RIGHT = 'top-right',
+  BOTTOM_CENTER = 'bottom-center',
+  BOTTOM_LEFT = 'bottom-left',
+  BOTTOM_RIGHT = 'bottom-right',
+}
 
 export interface ContextMenuProps<DataT> {
-  open: boolean;
+  isOpen: boolean;
   x: number;
   y: number;
   data?: DataT | null;
   onClose: () => void;
+  position?: Position;
   children?: (ctx: { data?: DataT | null; close: () => void }) => ReactElement;
 }
 
 function ContextMenu<DataT>({
-  open,
-  x,
-  y,
-  data,
-  onClose,
-  children,
-}: ContextMenuProps<DataT>) {
+                              isOpen,
+                              x,
+                              y,
+                              data,
+                              onClose,
+                              position = Position.TOP_CENTER,
+                              children,
+                            }: ContextMenuProps<DataT>) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const [menuSize, setMenuSize] = useState({ width: 160, height: 100 }); // defaults
 
-  const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target;
-    if (
-      target instanceof Node &&
-      wrapperRef.current &&
-      event.target &&
-      !wrapperRef.current.contains(target)
-    ) {
-      onClose();
+  useLayoutEffect(() => {
+    if (isOpen && wrapperRef.current) {
+      setMenuSize({
+        width: wrapperRef.current.offsetWidth,
+        height: wrapperRef.current.offsetHeight,
+      });
     }
-  };
+  }, [isOpen]);
 
   useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        event.target instanceof Node &&
+        !wrapperRef.current.contains(event.target)
+      ) {
+        onClose();
+      }
+    }
+
     document.addEventListener('mousedown', handleClickOutside, false);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside, false);
     };
-  }, []);
+  }, [onClose]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!isOpen) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         onClose();
@@ -50,19 +70,46 @@ function ContextMenu<DataT>({
     return () => {
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, onClose]);
+  }, [isOpen, onClose]);
 
-  if (!open) {
+  if (!isOpen) {
     return null;
   }
+
+  // Calculate position based on actual size
+  const getPositionStyles = () => {
+    const { width: menuWidth, height: menuHeight } = menuSize;
+
+    switch (position) {
+      case Position.LEFT:
+        return { left: x - menuWidth, top: y };
+      case Position.RIGHT:
+        return { left: x, top: y };
+      case Position.TOP_CENTER:
+        return { left: x - menuWidth / 2, top: y - menuHeight };
+      case Position.TOP_LEFT:
+        return { left: x - menuWidth, top: y - menuHeight };
+      case Position.TOP_RIGHT:
+        return { left: x, top: y - menuHeight };
+      case Position.BOTTOM_CENTER:
+        return { left: x - menuWidth / 2, top: y };
+      case Position.BOTTOM_LEFT:
+        return { left: x - menuWidth, top: y };
+      case Position.BOTTOM_RIGHT:
+      default:
+        return { left: x, top: y };
+    }
+  };
+
+  const positionStyles = getPositionStyles();
 
   const menu = (
     <div
       ref={wrapperRef}
       style={{
         position: 'fixed',
-        left: x,
-        top: y,
+        left: positionStyles.left,
+        top: positionStyles.top,
         zIndex: 10000,
         background: '#fff',
         border: '1px solid #ddd',
@@ -77,7 +124,7 @@ function ContextMenu<DataT>({
     </div>
   );
 
-  return createPortal(
+  return (
     <div
       onClick={onClose}
       style={{
@@ -88,8 +135,7 @@ function ContextMenu<DataT>({
       }}
     >
       {menu}
-    </div>,
-    document.body,
+    </div>
   );
 }
 

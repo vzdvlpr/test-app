@@ -98,7 +98,6 @@ const Grid: React.FC = () => {
 
   return (
     <>
-
       <DataGrid
         className={theme === 'light' ? 'rdg-light' : 'rdg-dark'}
         columns={columnsWithHeaderMenu}
@@ -111,7 +110,7 @@ const Grid: React.FC = () => {
         }}
       />
       <ContextMenu<Row>
-        open={cellMenuOpen}
+        isOpen={cellMenuOpen}
         x={menuPos.x}
         y={menuPos.y}
         data={menuRow}
@@ -123,7 +122,7 @@ const Grid: React.FC = () => {
       </ContextMenu>
 
       <ContextMenu<unknown>
-        open={headerCellMenuOpen}
+        isOpen={headerCellMenuOpen}
         x={menuPos.x}
         y={menuPos.y}
         onClose={() => setHeaderCellMenuOpen(false)}
@@ -148,13 +147,24 @@ const Grid: React.FC = () => {
                 </div>
               );
             })}
-            <div style={{marginTop: 8,display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div
+              style={{
+                marginTop: 8,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
               <label htmlFor="theme-select">Тема:</label>
               <select
                 id="theme-select"
                 value={theme}
                 onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
-                style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                style={{
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
+                }}
               >
                 <option value="light">Светлая</option>
                 <option value="dark">Темная</option>
